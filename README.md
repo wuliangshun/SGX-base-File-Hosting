@@ -1,10 +1,15 @@
 # SGX-base-File-Hosting
+Achieving Reconciliation between Privacy Preservation and Auditability For File Hosting (Blockchain Specified).
 
-## Demo地址
-` http://111.47.7.227:12580/
+## Technologies
 
-## 功能
-|  功能  |  解释|
+Intel SGX + IPFS + Hyperledger Fabric
+
+## Demo addr
+http://111.47.7.227:12580/
+
+## Functionalities
+|  Function  |  Description|
 |  ----  | ----  |
 | 配置本地引擎地址 | 本地模式（需要开启Intel SGX硬件支持，并加载本项目提供的本地引擎docker镜像）和代理模式（默认代理模式） |
 | 连接引擎 | 连接引擎 |
@@ -18,7 +23,7 @@
 | 哈希上链 | 加密文件的哈希（文件指纹）通过链码上传到超级账本联盟链中 |
 | 下载文件 | 用户下载服务器端文件 |
 
-## Run
+## Run The Project
 #### Run Web Server
 
 `$ cd ./server
