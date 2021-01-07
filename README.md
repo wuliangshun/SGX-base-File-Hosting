@@ -26,41 +26,41 @@ http://111.47.7.227:12580/
 ## Run The Project
 #### Run Web Server
 
-`$ cd ./server
+`$ cd ./server`
 
-`$ node WebServer.js
+`$ node WebServer.js`
 
 #### Run Server Engine
 
-`$ cd ./server
+`$ cd ./server`
 
 `$ node RemoteEngine.js
 
 #### Run Local Engine
 
-`$ cd ./client
+`$ cd ./client`
 
-`$ node localEngine.js
+`$ node localEngine.js`
 
 #### Start Fabric
 
-`$ cd $GOPATH/src/github.com/hyperledger/fabric/scripts/fabric-samples/basic-network
+`$ cd $GOPATH/src/github.com/hyperledger/fabric/scripts/fabric-samples/basic-network`
 
-`$ docker-compose -f docker-compose.yml up -d
+`$ docker-compose -f docker-compose.yml up -d`
 
-`$ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/channel.tx
+`$ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/channel.tx`
 
-`$ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b mychannel.block
+`$ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b mychannel.block`
 
-`$ docker exec -it cli /bin/bash
+`$ docker exec -it cli /bin/bash`
 
-`$ peer chaincode install -n efs_cc -v v0 -p github.com/efs
+`$ peer chaincode install -n efs_cc -v v0 -p github.com/efs`
 
-`$ peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n efs_cc -v v0 -c '{"Args":[]}'
+`$ peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n efs_cc -v v0 -c '{"Args":[]}'`
  
-`$ peer chaincode invoke -n efs_cc -c '{"Args":["initLedger"]}' -C mychannel
+`$ peer chaincode invoke -n efs_cc -c '{"Args":["initLedger"]}' -C mychannel`
 
 #### Start IPFS
 
-`$ ipfs daemon
+`$ ipfs daemon`
 
