@@ -1,7 +1,7 @@
 {
-    "name": "zalldisk",
+    "name": "efs",
     "version": "1.0.0",
-    "description": "ZallDisk application implemented in JavaScript",
+    "description": "EFS application implemented in JavaScript",
     "engines": {
         "node": ">=8",
         "npm": ">=5"
@@ -12,7 +12,7 @@
         "test": "nyc mocha --recursive"
     },
     "engineStrict": true,
-    "author": "Zallai",
+    "author": "wuliangshun",
     "license": "Apache-2.0",
     "dependencies": {
         "express": "^4.17.1",

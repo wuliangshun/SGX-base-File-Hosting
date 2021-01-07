@@ -1,54 +1,64 @@
 /*
 chaincode
+
+
+ 
+ peer chaincode install -n efs_cc -v v0 -p github.com/efs
+ peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n efs_cc -v v0 -c '{"Args":[]}'
+ peer chaincode invoke -n efs_cc -c '{"Args":["initLedger"]}' -C mychannel
+ peer chaincode invoke -n efs_cc -c '{"Args":["addUser","wuliangshun","common"]}' -C mychannel
+ peer chaincode invoke -n efs_cc -c '{"Args":["addFile","Qmb64o6w185r37cmyjhhSPyKTi7e968o3oLpfHjPN6qiZs","test.txt","wuliangshun"]}' -C mychannel
+ peer chaincode invoke -n efs_cc -c '{"Args":["queryFileByHash","Qmb64o6w185r37cmyjhhSPyKTi7e968o3oLpfHjPN6qiZs"]}' -C mychannel
+
+
 */
 
 'use strict';
 
 const FabricCAServices = require('fabric-ca-client');
-const { FileSystemWallet, Gateway } = require('fabric-network');
+const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
-const ccpPath = path.resolve(__dirname, '..', '..', 'first-network', 'connection-org1.json');
+const ccpPath = path.resolve(__dirname, '..', 'basic-network', 'connection.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
-
 
 async function enrollAdmin() {
     try {
 
-        // Create a new CA client for interacting with the CA.
-        const caInfo = ccp.certificateAuthorities['ca.org1.example.com'];
-        const caTLSCACerts = caInfo.tlsCACerts.pem;
-        const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
+        // 创建一个CA客户端
+        const caURL = ccp.certificateAuthorities['ca.example.com'].url;
+        const ca = new FabricCAServices(caURL);
 
-        // Create a new file system based wallet for managing identities.
+        // 创建一个wallet文件夹，用于管理身份.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 
-        // Check to see if we've already enrolled the admin user.
+        // 检查是否已经注册管理员.
         const adminExists = await wallet.exists('admin');
         if (adminExists) {
             console.log('An identity for the admin user "admin" already exists in the wallet');
             return;
         }
 
-        // Enroll the admin user, and import the new identity into the wallet.
+        // 向ca服务器注册管理员,并将从服务器获得的身份证书导入到wallet.
         const enrollment = await ca.enroll({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' });
-        const identity = Gateway.createIdentity('Org1MSP', enrollment.certificate, enrollment.key.toBytes());
-        await wallet.import('admin', identity);
+        const identity = X509WalletMixin.createIdentity('Org1MSP', enrollment.certificate, enrollment.key.toBytes());
+        wallet.import('admin', identity);
         console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
 
     } catch (error) {
         console.error(`Failed to enroll admin user "admin": ${error}`);
-        //process.exit(1);
+        process.exit(1);
     }
 }
 
 
 async function invoke(func, ...args) {
-    try {
+	
+	try {
 		
 		 // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
@@ -65,13 +75,16 @@ async function invoke(func, ...args) {
 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
-        await gateway.connect(ccpPath, { wallet, identity: 'admin', discovery: { enabled: true, asLocalhost: true } });
-
+        await gateway.connect(ccp, { wallet, identity: 'admin', discovery: { enabled:  false} });//*/true, asLocalhost: true
+		
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork('mychannel');
-
+		
         // Get the contract from the network.
-        const contract = network.getContract('zalldisk');
+        //console.dir(network);
+        //console.log("------------------")
+        //console.log(network.contracts);
+        const contract = network.getContract('efs_cc');
 
         // Submit the specified transaction.
         await contract.submitTransaction(func, ...args);
@@ -105,13 +118,13 @@ async function query(func, ...args) {
 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
-        await gateway.connect(ccpPath, { wallet, identity: 'admin', discovery: { enabled: true, asLocalhost: true } });
+        await gateway.connect(ccp, { wallet, identity: 'admin', discovery: { enabled: true, asLocalhost: true } });
 
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork('mychannel');
 
         // Get the contract from the network.
-        const contract = network.getContract('zalldisk');
+        const contract = network.getContract('efs_cc');
 
         // Evaluate the specified transaction.
         const result = await contract.evaluateTransaction(func, ...args);

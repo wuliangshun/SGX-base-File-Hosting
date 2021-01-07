@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>EFS 保护隐私的、可审计的区块链存储</title>
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full"></script>
+</head>
+<body>
+
+
+<style>
+	.container { 
+		height:1000px;
+        
+		background-image: url("./Html/background.jpg");
+	}
+</style>
+<nav class="navbar navbar-inverse" role="navigation">
+	<div class="container-fluid">
+	    <div class="navbar-header">
+		<a class="navbar-brand" href="#">EFS</a>
+	    </div>
+	    <div>
+		<ul class="nav navbar-nav">
+		    <li class="active"><a href="#">主界面</a></li>
+		    <li><a href="#">项目文档</a></li>
+		    <li><a href="#">联系我们</a></li>
+		</ul>
+	    </div>
+	</div>
+</nav>
+<div class="container">  <!--style="background-image:url(background.jpg);height:1000px"-->
+   <div class="row" >
+      <div class="col-xs-6 col-sm-3">
+         本地引擎设置：<br>
+         IP&nbsp&nbsp&nbsp: <input type="text" id="ip" /><br>
+         Port:<input type="text" id="port" /><br>
+        <button type="button" class="btn btn-primary" OnClick=LocalEngineSetting()>Save</button><br>
+      <label>注意：默认为代理模式.<br>
+    代理(本地引擎)地址:  111.47.7.227:12582</label><br>
+       <br>
+      <form method='post', action='http://111.47.7.227:12582/upload', enctype='multipart/form-data'>
+        <input type="file" name="inputFile" >
+        <input type="submit" value="同步至本地引擎" class="btn btn-primary">
+      </form>
+       <br>
+       请输入用户名: <input type="text" id="username" /><br>
+       指定需要加密的文件名: <input type="text" id="filepath" /><br>
+      </div>
+      <div class="col-xs-6 col-sm-6">
+	<!-- 提供额外的视觉效果，标识一组按钮中的原始动作 -->
+	<button type="button" class="btn btn-error" OnClick=ConnectEngine()>连接引擎</button>
+	<!-- 表示一个成功的或积极的动作 -->
+	<button type="button" class="btn btn-success" OnClick=GenerateKey()>生成密钥</button>
+	<!-- 信息警告消息的上下文按钮 -->
+	<button type="button" class="btn btn-info" OnClick=EncryptFile()>加密文件</button>
+	<!-- 表示应谨慎采取的动作 -->
+	<button type="button" class="btn btn-warning" OnClick=UploadFile()>上传文件</button>
+	<!-- 表示一个危险的或潜在的负面动作 -->
+	<button type="button" class="btn btn-danger" OnClick=DownloadFile()>下载文件</button>
+        <!-- Panel -->
+         <div class="panel panel-primary" >
+		<div class="panel-heading" >
+			<h3 class="panel-title">输出窗口</h3>
+			</div>
+			<div class="panel-body"  class="formula" style="height:1000px" id="CE_console">
+				
+			</div>
+		</div>
+       </div>
+      <div class="col-xs-6 col-sm-3" >
+         
+      </div>
+     
+   </div>
+</div>
+
+<script type="text/javascript">
+	
+	var xhr = new XMLHttpRequest();
+	
+	var local_engine_addr = "http://111.47.7.227:12582";
+    
+    var isConnect = false;
+	
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			var res = xhr.responseText;
+			console.log(res);
+			LE_Console(res);
+            if(res.indexOf("connected") >= 0){
+                isConnect = true;
+            }
+		}
+	};
+	//config local engine
+    function LocalEngineSetting(){
+        var ip = document.getElementById("ip").value;
+        var port = document.getElementById("port").value;   
+        local_engine_addr = "http://" + ip + ":" + port;
+        console.log(local_engine_addr);
+        LE_Console("Current local engine address:    "+local_engine_addr);
+    };
+	//connect local engine
+	function ConnectEngine(){
+		var url = local_engine_addr + "/connect";
+		xhr.open('GET', url, true);
+		xhr.send();
+	};
+	
+	//generate file key
+	function GenerateKey(){
+        if(isConnect){
+            var url = local_engine_addr + "/generate";
+            xhr.open('GET', url, true);
+            xhr.send();
+        }else{
+            LE_Console("Not connect to local engine!");
+        }
+	}
+	
+	//encrypt file
+	function EncryptFile(){
+        if(isConnect){
+            var filepath = document.getElementById("filepath").value;//encrypted_example.txt
+            var username = document.getElementById("username").value;
+            var url = local_engine_addr + "/encrypt?username="+ username +"&filepath="+filepath;
+            xhr.open('GET', url, true);
+            xhr.send();
+        }else{
+            LE_Console("Not connect to local engine!");
+        }
+	}
+	
+	//upload file
+	function UploadFile(){
+        if(isConnect){
+            var filepath = document.getElementById("filepath").value;//encrypted_example.txt
+            var username = document.getElementById("username").value;
+            var url = local_engine_addr + "/upload?username="+ username +"&filepath="+filepath;
+            xhr.open('GET', url, true);
+            xhr.send();
+        }else{
+            LE_Console("Not connect to local engine!");
+        }
+	}
+	
+	//download file
+	function DownloadFile(){
+        if(isConnect){
+            var url = local_engine_addr + "/download";
+            xhr.open('GET', url, true);
+            xhr.send();
+        }else{
+            LE_Console("Not connect to local engine!");
+        }
+	}
+	
+	//console pannel
+	function LE_Console(msg){
+		var p = document.getElementById("CE_console");
+		var text = p.innerHTML;
+		if(text != "")
+			text = text + "<br>" + msg;
+		else
+			text = msg;
+		console.log(text);
+		p.innerHTML = text;
+	}
+	
+</script>
+
+
+</body>
+</html>

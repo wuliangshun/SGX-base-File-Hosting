@@ -1,0 +1,8 @@
+一.ipfs安装
+1.下载go-ipfs : https://dist.ipfs.io/#go-ipfs(需要翻墙)
+如果网络没翻墙去github下载 地址https://github.com/ipfs/go-ipfs/releases
+2.获取安装包之后
+解压 tar xvfz go-ipfs.tar.gz
+切换到cd go-ipfs
+ ./install.sh 执行该脚本会自动安装成功
+3.执行ipfs init  会生成提示，界面有一串哈希地址，通过 ipfs cat 该哈希地址出现界面安装成功。

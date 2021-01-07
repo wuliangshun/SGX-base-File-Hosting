@@ -1,0 +1,28 @@
+
+
+enclave {
+    include "sys/types.h"
+    include "sgx_key.h"
+
+    from "sgx_tstdc.edl" import *;
+    from "sgx_tprotected_fs.edl" import *;
+    include "sgx_tprotected_fs.h"
+
+    trusted {
+        public int ecall_encrypt_file([in, string] const char* input_file,
+                                        [in, string] const char* output_file);
+        public int ecall_decrypt_file([in, string] const char* input_file,
+                                        [in, string] const char* username);
+		
+    };
+
+    untrusted {
+        int ocall_open([in, string] const char* path);
+        int ocall_create([in, string] const char* path);
+        ssize_t ocall_read(int fd, [out, size=size] void* buf, size_t size);
+        ssize_t ocall_write(int fd, [in, size=size] const void* buf, size_t size);
+        int ocall_close(int fd);
+
+        void ocall_print([in, string] const char* msg);
+    };
+};
