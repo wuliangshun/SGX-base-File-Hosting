@@ -24,25 +24,25 @@ http://111.47.7.227:12580/
 | 下载文件 | 用户下载服务器端文件 |
 
 ## Run The Project
-#### Run Web Server
+#### * Run Web Server
 
 ```$ cd ./server```
 
 ```$ node WebServer.js```
 
-#### Run Server Engine
+#### * Run Server Engine
 
 ```$ cd ./server```
 
 ```$ node RemoteEngine.js```
 
-#### Run Local Engine
+#### * Run Local Engine
 
 ```$ cd ./client```
 
 ```$ node localEngine.js```
 
-#### Start Fabric
+#### * Start Fabric
 
 ```$ cd $GOPATH/src/github.com/hyperledger/fabric/scripts/fabric-samples/basic-network```
 
@@ -60,7 +60,7 @@ http://111.47.7.227:12580/
  
 ```$ peer chaincode invoke -n efs_cc -c '{"Args":["initLedger"]}' -C mychannel```
 
-#### Start IPFS
+#### * Start IPFS
 
 ```$ ipfs daemon```
 
